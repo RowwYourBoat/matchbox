@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "matchbox",
+	"version": "${version}",
+	"name": "matchbox",
+	"description": "Adds the functionality required to play / host Matchbox games",
+	"authors": [
+		"RowwYourBoat"
+	],
+	"contact": {
+		"homepage": "https://rowfolio.dev/",
+		"sources": ""
+	},
+	"license": "GNU-GPL",
+	"icon": "assets/matchbox/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"me.rowwyourboat.Matchbox"
+		],
+		"client": [
+			"me.rowwyourboat.MatchboxClient"
+		],
+		"fabric-datagen": [
+			"me.rowwyourboat.MatchboxDataGenerator"
+		]
+	},
+	"mixins": [
+		"matchbox.mixins.json",
+		{
+			"config": "matchbox.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21.8",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
