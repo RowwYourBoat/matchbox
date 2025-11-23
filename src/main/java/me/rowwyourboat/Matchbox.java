@@ -1,5 +1,8 @@
 package me.rowwyourboat;
 
+import me.rowwyourboat.events.AfterDamageEvents;
+import me.rowwyourboat.events.BlockEvents;
+import me.rowwyourboat.players.NameVisibility;
 import me.rowwyourboat.players.SkinOverrider;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
@@ -13,5 +16,13 @@ public class Matchbox implements ModInitializer {
 	@Override
 	public void onInitialize() {
         new SkinOverrider();
+        this.registerEvents();
 	}
+
+    private void registerEvents() {
+        NameVisibility.registerEvents();
+        AfterDamageEvents.register();
+        BlockEvents.register();
+    }
+
 }
