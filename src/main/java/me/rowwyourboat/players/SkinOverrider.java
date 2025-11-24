@@ -72,15 +72,15 @@ public class SkinOverrider {
     private void updatePlayerAppearance(ServerPlayerEntity player) {
         for (ServerPlayerEntity otherPlayer : player.getWorld().getPlayers()) {
             otherPlayer.networkHandler.sendPacket(
-                    new PlayerRemoveS2CPacket(
-                            List.of(player.getUuid())
-                    )
+                new PlayerRemoveS2CPacket(
+                    List.of(player.getUuid())
+                )
             );
             otherPlayer.networkHandler.sendPacket(
-                    new PlayerListS2CPacket(
-                            PlayerListS2CPacket.Action.ADD_PLAYER,
-                            player
-                    )
+                new PlayerListS2CPacket(
+                    PlayerListS2CPacket.Action.ADD_PLAYER,
+                    player
+                )
             );
         }
     }

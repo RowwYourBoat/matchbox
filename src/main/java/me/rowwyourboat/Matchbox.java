@@ -1,5 +1,6 @@
 package me.rowwyourboat;
 
+import me.rowwyourboat.commands.CommandTree;
 import me.rowwyourboat.events.AfterDamageEvents;
 import me.rowwyourboat.events.BlockEvents;
 import me.rowwyourboat.players.NameVisibility;
@@ -17,12 +18,17 @@ public class Matchbox implements ModInitializer {
 	public void onInitialize() {
         new SkinOverrider();
         this.registerEvents();
+        this.registerCommands();
 	}
 
     private void registerEvents() {
         NameVisibility.registerEvents();
         AfterDamageEvents.register();
         BlockEvents.register();
+    }
+
+    private void registerCommands() {
+        CommandTree.register();
     }
 
 }
