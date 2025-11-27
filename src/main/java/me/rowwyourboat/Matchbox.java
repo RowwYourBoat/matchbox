@@ -1,6 +1,6 @@
 package me.rowwyourboat;
 
-import me.rowwyourboat.commands.CommandTree;
+import me.rowwyourboat.commands.CommandExecutor;
 import me.rowwyourboat.events.AfterDamageEvents;
 import me.rowwyourboat.events.BlockEvents;
 import me.rowwyourboat.players.NameVisibility;
@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 public class Matchbox implements ModInitializer {
 	public static final String MOD_ID = "matchbox";
-
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    private CommandExecutor commandExecutor;
 
 	@Override
 	public void onInitialize() {
@@ -28,7 +29,8 @@ public class Matchbox implements ModInitializer {
     }
 
     private void registerCommands() {
-        CommandTree.register();
+        this.commandExecutor = new CommandExecutor();
+        this.commandExecutor.register();
     }
 
 }
