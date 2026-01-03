@@ -1,5 +1,6 @@
 package me.rowwyourboat.events;
 
+import me.rowwyourboat.Matchbox;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,7 +16,7 @@ public class BlockEvents {
     }
 
     private static boolean onBlockBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity entity) {
-        return player.hasPermissionLevel(4) || state.getBlock() == Blocks.OAK_SIGN;
+        return player.getPermissions().hasPermission(Matchbox.ownerPermissionLevel) || state.getBlock() == Blocks.OAK_SIGN;
     }
 
 }

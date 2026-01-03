@@ -1,6 +1,7 @@
 package me.rowwyourboat.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import me.rowwyourboat.Matchbox;
 import me.rowwyourboat.commands.abstracts.AbstractCommand;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
@@ -16,13 +17,13 @@ public class CommandExecutor {
     public CommandExecutor() {
         this.initCommands();
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
             dispatcher.register(
                     CommandManager.literal("matchbox")
-                            .requires(src -> src.hasPermissionLevel(4))
+                            .requires(src -> src.getPermissions().hasPermission(Matchbox.ownerPermissionLevel))
                             .then(this.registerGameSubCommands())
-            );
-        });
+            )
+        );
     }
 
     private void initCommands() {
