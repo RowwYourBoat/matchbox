@@ -27,7 +27,7 @@ public class Matchbox implements ModInitializer {
         new SkinOverrider();
         new CommandExecutor();
 
-        CommandBlacklist.removeAll();
+        CommandBlacklist.disableAll();
 	}
 
     private void registerEvents() {

@@ -2,49 +2,48 @@ package me.rowwyourboat.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.rowwyourboat.Matchbox;
-import me.rowwyourboat.commands.abstracts.AbstractCommand;
+import me.rowwyourboat.commands.game.GameReset;
+import me.rowwyourboat.commands.game.GameStart;
+import me.rowwyourboat.commands.spawns.SpawnAdd;
+import me.rowwyourboat.commands.spawns.SpawnClear;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-
 public class CommandExecutor {
 
-    private final HashMap<String, AbstractCommand> commands = new HashMap<>();
-
     public CommandExecutor() {
-        this.initCommands();
-
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
             dispatcher.register(
                     CommandManager.literal("matchbox")
                             .requires(src -> src.getPermissions().hasPermission(Matchbox.ownerPermissionLevel))
                             .then(this.registerGameSubCommands())
+                            .then(this.registerSpawnSubCommands())
             )
         );
-    }
-
-    private void initCommands() {
-        try {
-            for (SubCommands cmd : SubCommands.values()) {
-                commands.put(cmd.getName(), cmd.getClazz().getConstructor().newInstance());
-            }
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private LiteralArgumentBuilder<ServerCommandSource> registerGameSubCommands() {
         return CommandManager.literal("game")
                 .then(
-                        CommandManager.literal(SubCommands.START.getName())
-                                .executes(ctx -> this.commands.get(SubCommands.START.getName()).execute(ctx))
+                        CommandManager.literal("start")
+                                .executes(GameStart::execute)
                 )
                 .then(
-                        CommandManager.literal(SubCommands.RESET.getName())
-                                .executes(ctx -> this.commands.get(SubCommands.RESET.getName()).execute(ctx))
+                        CommandManager.literal("reset")
+                                .executes(GameReset::execute)
+                );
+    }
+
+    private LiteralArgumentBuilder<ServerCommandSource> registerSpawnSubCommands() {
+        return CommandManager.literal("spawn")
+                .then(
+                        CommandManager.literal("add")
+                                .executes(SpawnAdd::execute)
+                )
+                .then(
+                        CommandManager.literal("clear")
+                                .executes(SpawnClear::execute)
                 );
     }
 
