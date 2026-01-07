@@ -1,13 +1,12 @@
 package me.rowwyourboat;
 
-import me.rowwyourboat.commands.CommandExecutor;
 import me.rowwyourboat.commands.CommandBlacklist;
+import me.rowwyourboat.commands.CommandExecutor;
 import me.rowwyourboat.events.AfterDamageEvents;
 import me.rowwyourboat.events.BlockEvents;
 import me.rowwyourboat.events.ChatEvents;
-import me.rowwyourboat.game.GameManager;
-import me.rowwyourboat.players.NameVisibility;
 import me.rowwyourboat.players.SkinOverrider;
+import me.rowwyourboat.services.NameVisibilityService;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.permission.Permission;
 import net.minecraft.command.permission.PermissionLevel;
@@ -31,8 +30,7 @@ public class Matchbox implements ModInitializer {
 	}
 
     private void registerEvents() {
-        GameManager.registerEvents();
-        NameVisibility.registerEvents();
+        NameVisibilityService.registerEvents();
         AfterDamageEvents.register();
         BlockEvents.register();
         ChatEvents.register();

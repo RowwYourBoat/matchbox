@@ -2,7 +2,7 @@ package me.rowwyourboat.commands.spawns;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import me.rowwyourboat.data.SpawnLocations;
+import me.rowwyourboat.services.DataService;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -11,9 +11,6 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
-/**
- * Command for getting a list of all saved spawn locations
- */
 public class SpawnsGet {
 
     public static int execute(CommandContext<ServerCommandSource> commandContext) {
@@ -23,7 +20,7 @@ public class SpawnsGet {
         MinecraftServer server = player.getEntityWorld().getServer();
         if (server == null) { return 0; }
 
-        List<BlockPos> spawnLocations = SpawnLocations.getSpawnLocationsData(server).getList();
+        List<BlockPos> spawnLocations = DataService.getGlobalSpawnLocations(server).getBlockPosList();
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Spawn locations: \n");

@@ -1,11 +1,7 @@
 package me.rowwyourboat.data;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +18,7 @@ public class SpawnLocations extends PersistentState {
         this(new ArrayList<>());
     }
 
-    public List<BlockPos> getList() {
+    public List<BlockPos> getBlockPosList() {
         return this.spawnLocations;
     }
 
@@ -48,19 +44,6 @@ public class SpawnLocations extends PersistentState {
 
         this.spawnLocations = spawnLocations;
         super.markDirty();
-    }
-
-    private static final Codec<SpawnLocations> CODEC = Codec.list(BlockPos.CODEC).xmap(SpawnLocations::new, SpawnLocations::getList);
-
-    private static final PersistentStateType<SpawnLocations> STATE_TYPE = new PersistentStateType<>(
-            "spawn_locations",
-            SpawnLocations::new,
-            CODEC,
-            DataFixTypes.SAVED_DATA_WORLD_BORDER
-    );
-
-    public static SpawnLocations getSpawnLocationsData(MinecraftServer server) {
-        return server.getSpawnWorld().getPersistentStateManager().getOrCreate(STATE_TYPE);
     }
 
 }
