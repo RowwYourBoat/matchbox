@@ -24,7 +24,7 @@ public class GameService {
     /*
      * Round start:
      * 1. Disable chat
-     * 2. Spread players out in the map (start with blind- and slowness)
+     * 2. Spread candidates out in the map (start with blind- and slowness)
      * 3. Assign roles
      * 4. Start a 10-minute round duration timer
      */
@@ -32,7 +32,7 @@ public class GameService {
     /*
      * End of round (meeting):
      * 1. Player marked by the spark dies (unless they're marked by the medic and are told so)
-     * 2. All players get blind- and slowness
+     * 2. All candidates get blind- and slowness
      * 3. Enable chat
      * 4. Start a 10-minute meeting duration timer (3:30 for first round)
      * 5. Disable chat when the timer hits 0
@@ -40,13 +40,14 @@ public class GameService {
      */
 
     public static GameState createNewGame(ServerWorld world) {
-        Matchbox.LOGGER.info(world.getRegistryKey().getValue().toString());
+        Matchbox.LOGGER.info(world.getServer().getWorldRegistryKeys().toString());
         GameState gameState = new GameState(world);
         gameStates.put(gameState.getGameWorld().getRegistryKey(), gameState);
         return gameState;
     }
 
     public static void startGame(GameState gameState) {
+        hideAllPlayerNames(gameState);
         spreadPlayers(gameState);
         assignRoles(gameState);
     }
@@ -96,7 +97,19 @@ public class GameService {
         }
     }
 
-    private static void assignRoles(GameState gameState) {
+    private static void hideAllPlayerNames(GameState gameState) {
+        List<ServerPlayerEntity> players = gameState.getPlayers();
 
+        for (ServerPlayerEntity player : players) {
+            NameVisibilityService.hide(player);
+        }
+    }
+
+    private static void assignRoles(GameState gameState) {
+        List<ServerPlayerEntity> candidates = gameState.getPlayers();
+
+        gameState.setSpark(RoleService.draftRandomPlayer(candidates));
+        if (candidates.isEmpty()) { return; }
+        gameState.setMedic(RoleService.draftRandomPlayer(candidates));
     }
 }

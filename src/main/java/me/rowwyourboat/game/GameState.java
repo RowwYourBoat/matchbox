@@ -1,9 +1,13 @@
 package me.rowwyourboat.game;
 
+import me.rowwyourboat.services.NameVisibilityService;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.UUID;
 
@@ -14,7 +18,9 @@ public class GameState {
 
     private GamePhase phase;
     private CounterTask counter;
+
     private long phaseTimeLeft;
+    private long sparkAbilityCooldown;
 
     private UUID sparkId;
     private UUID medicId;
@@ -28,6 +34,7 @@ public class GameState {
 
     public void purge() {
         this.timer.cancel();
+        NameVisibilityService.clearTeams();
     }
 
     public void onTimerEnded() {
@@ -38,12 +45,24 @@ public class GameState {
         this.phase = phase;
     }
 
+    public void setSpark(ServerPlayerEntity player) {
+        this.sparkId = player.getUuid();
+    }
+
+    public void setMedic(ServerPlayerEntity player) {
+        this.medicId = player.getUuid();
+    }
+
     public void decrementPhaseTimeLeft() {
         this.phaseTimeLeft--;
     }
 
     public void setPhaseTimeLeft(long time) {
         this.phaseTimeLeft = time;
+    }
+
+    public List<ServerPlayerEntity> getPlayers() {
+        return new ArrayList<>(this.world.getPlayers());
     }
 
     public long getPhaseTimeLeft() {

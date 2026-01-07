@@ -19,7 +19,11 @@ public class GameStart {
         }
 
         GameState newGame = GameService.createNewGame(world);
-        GameService.startGame(newGame);
+        try {
+            GameService.startGame(newGame);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         commandContext.getSource().sendMessage(Text.of("Game has been started."));
         return Command.SINGLE_SUCCESS;
