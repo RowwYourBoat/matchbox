@@ -1,10 +1,11 @@
 package me.rowwyourboat;
 
+import me.rowwyourboat.keybinds.SparkAbilityKeybind;
 import net.fabricmc.api.ClientModInitializer;
 
 public class MatchboxClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+		SparkAbilityKeybind.register();
 	}
 }
