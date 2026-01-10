@@ -6,7 +6,6 @@ import me.rowwyourboat.events.AfterDamageEvents;
 import me.rowwyourboat.events.BlockEvents;
 import me.rowwyourboat.events.ChatEvents;
 import me.rowwyourboat.network.PacketListener;
-import me.rowwyourboat.players.SkinOverrider;
 import me.rowwyourboat.services.NameVisibilityService;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.permission.Permission;
@@ -24,7 +23,6 @@ public class Matchbox implements ModInitializer {
 	public void onInitialize() {
         this.registerEvents();
 
-        new SkinOverrider();
         new CommandExecutor();
 
         CommandBlacklist.disableAll();

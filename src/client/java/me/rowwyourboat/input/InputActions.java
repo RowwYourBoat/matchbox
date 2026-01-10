@@ -8,8 +8,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.PlayerLikeEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class InputActions {
 
         // Player marking
         if (!client.mouse.wasRightButtonClicked()) { return; }
-        PlayerLikeEntity target = MatchboxClient.getTargetedPlayer(client);
+        OtherClientPlayerEntity target = MatchboxClient.getTargetedPlayer(client);
 
         if (target == null) { return; }
         ClientPlayNetworking.send(new MarkPlayerC2SPayload(Optional.of(target.getUuid())));

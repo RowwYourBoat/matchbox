@@ -40,7 +40,6 @@ public class GameService {
      */
 
     public static GameState createNewGame(ServerWorld world) {
-        Matchbox.LOGGER.info(world.getServer().getWorldRegistryKeys().toString());
         GameState gameState = new GameState(world);
         gameStates.put(gameState.getGameWorld().getRegistryKey(), gameState);
         return gameState;

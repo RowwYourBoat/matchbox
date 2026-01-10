@@ -3,7 +3,7 @@
 	"package": "me.rowwyourboat.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+      "PlayerSkinProviderMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

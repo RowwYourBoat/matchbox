@@ -4,8 +4,8 @@ import me.rowwyourboat.input.InputActions;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.PlayerLikeEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +16,7 @@ public class MatchboxClient implements ClientModInitializer {
 		InputActions.register();
 	}
 
-	public static @Nullable PlayerLikeEntity getTargetedPlayer(MinecraftClient client) {
+	public static @Nullable OtherClientPlayerEntity getTargetedPlayer(MinecraftClient client) {
 		ClientPlayerEntity player = client.player;
 		if (player == null) { return null; }
 
@@ -24,7 +24,7 @@ public class MatchboxClient implements ClientModInitializer {
 		if (!(result instanceof EntityHitResult entityResult)) { return null; }
 
 		Entity targetedEntity = entityResult.getEntity();
-		if (!(targetedEntity instanceof PlayerLikeEntity targetedPlayer)) { return null; }
+		if (!(targetedEntity instanceof OtherClientPlayerEntity targetedPlayer)) { return null; }
 
 		return targetedPlayer;
 	}
