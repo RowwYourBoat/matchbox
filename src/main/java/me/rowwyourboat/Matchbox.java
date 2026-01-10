@@ -5,6 +5,7 @@ import me.rowwyourboat.commands.CommandExecutor;
 import me.rowwyourboat.events.AfterDamageEvents;
 import me.rowwyourboat.events.BlockEvents;
 import me.rowwyourboat.events.ChatEvents;
+import me.rowwyourboat.network.PacketListener;
 import me.rowwyourboat.players.SkinOverrider;
 import me.rowwyourboat.services.NameVisibilityService;
 import net.fabricmc.api.ModInitializer;
@@ -31,6 +32,7 @@ public class Matchbox implements ModInitializer {
 
     private void registerEvents() {
         NameVisibilityService.registerEvents();
+        PacketListener.register();
         AfterDamageEvents.register();
         BlockEvents.register();
         ChatEvents.register();
