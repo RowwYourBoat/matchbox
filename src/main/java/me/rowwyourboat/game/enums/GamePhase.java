@@ -1,4 +1,4 @@
-package me.rowwyourboat.game;
+package me.rowwyourboat.game.enums;
 
 public enum GamePhase {
     SETUP,

@@ -2,7 +2,7 @@ package me.rowwyourboat.commands.game;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import me.rowwyourboat.game.GameState;
+import me.rowwyourboat.game.GameInstance;
 import me.rowwyourboat.services.GameService;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -12,13 +12,13 @@ public class GameStart {
 
     public static int execute(CommandContext<ServerCommandSource> commandContext) {
         ServerWorld world = commandContext.getSource().getWorld();
-        GameState gameState = GameService.getGameFromWorld(world);
-        if (gameState != null) {
+        GameInstance game = GameService.getGameFromWorld(world);
+        if (game != null) {
             commandContext.getSource().sendError(Text.of("Game is in progress!"));
             return 0;
         }
 
-        GameState newGame = GameService.createNewGame(world);
+        GameInstance newGame = GameService.createNewGame(world);
         try {
             GameService.startGame(newGame);
         } catch (Exception e) {

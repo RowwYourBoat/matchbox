@@ -1,10 +1,13 @@
 package me.rowwyourboat.network;
 
-import me.rowwyourboat.Matchbox;
+import me.rowwyourboat.game.GameInstance;
 import me.rowwyourboat.network.payloads.MarkPlayerC2SPayload;
 import me.rowwyourboat.network.payloads.SparkAbilityC2SPayload;
+import me.rowwyourboat.services.GameService;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
+import java.util.UUID;
 
 public class PacketListener {
 
@@ -17,11 +20,19 @@ public class PacketListener {
     }
 
     private static void onSparkAbilityPayload(SparkAbilityC2SPayload payload, ServerPlayNetworking.Context context) {
-        Matchbox.LOGGER.info("Received player: {}", context.player().getName());
+        GameInstance game = GameService.getGameFromWorld(context.player().getEntityWorld());
+        if (game == null) { return; }
+        game.performSparkSwapAbility(context.player().getUuid());
     }
 
     private static void onMarkPlayerPayload(MarkPlayerC2SPayload payload, ServerPlayNetworking.Context context) {
-        Matchbox.LOGGER.info("Received target uuid: {}", payload.targetId);
+        UUID targetId = payload.targetId.orElse(null);
+        if (targetId == null) { return; }
+
+        GameInstance game = GameService.getGameFromWorld(context.player().getEntityWorld());
+        if (game == null) { return; }
+
+        game.setTargetAsMarkedBy(targetId, context.player().getUuid());
     }
 
 }

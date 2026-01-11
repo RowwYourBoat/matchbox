@@ -18,6 +18,7 @@ public class Matchbox implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Permission.Level ownerPermissionLevel = new Permission.Level(PermissionLevel.OWNERS);
+    public static final Double markRange = 4.5d;
 
 	@Override
 	public void onInitialize() {

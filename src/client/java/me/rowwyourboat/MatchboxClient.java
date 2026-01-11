@@ -20,7 +20,10 @@ public class MatchboxClient implements ClientModInitializer {
 		ClientPlayerEntity player = client.player;
 		if (player == null) { return null; }
 
-		HitResult result = player.getCrosshairTarget(0f, client.getCameraEntity());
+		Entity cameraEntity = client.getCameraEntity();
+		if (cameraEntity == null) { return null; }
+
+		HitResult result = player.getCrosshairTarget(0f, cameraEntity);
 		if (!(result instanceof EntityHitResult entityResult)) { return null; }
 
 		Entity targetedEntity = entityResult.getEntity();
