@@ -3,7 +3,7 @@ package me.rowwyourboat.commands.spawns;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import me.rowwyourboat.data.SpawnLocations;
-import me.rowwyourboat.services.DataService;
+import me.rowwyourboat.managers.DataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,7 +20,7 @@ public class SpawnsAdd {
         MinecraftServer server = player.getEntityWorld().getServer();
         if (server == null) { return 0; }
 
-        SpawnLocations spawnLocations = DataService.getGlobalSpawnLocations(server);
+        SpawnLocations spawnLocations = DataManager.getGlobalSpawnLocations(server);
         spawnLocations.add(pos);
 
         player.sendMessage(Text.of("Added spawn location at " + pos.toShortString()));

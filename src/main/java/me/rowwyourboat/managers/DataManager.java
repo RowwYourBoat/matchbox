@@ -1,13 +1,12 @@
-package me.rowwyourboat.services;
+package me.rowwyourboat.managers;
 
 import com.mojang.serialization.Codec;
 import me.rowwyourboat.data.SpawnLocations;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentStateType;
 
-public class DataService {
+public class DataManager {
 
     private static final Codec<SpawnLocations> SPAWN_CODEC = Codec.list(BlockPos.CODEC).xmap(SpawnLocations::new, SpawnLocations::getBlockPosList);
 
@@ -15,7 +14,7 @@ public class DataService {
             "spawn_locations",
             SpawnLocations::new,
             SPAWN_CODEC,
-            DataFixTypes.SAVED_DATA_WORLD_BORDER
+            null
     );
 
     public static SpawnLocations getGlobalSpawnLocations(MinecraftServer server) {

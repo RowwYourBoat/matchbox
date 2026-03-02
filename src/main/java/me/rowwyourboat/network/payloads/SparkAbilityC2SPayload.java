@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
  * Sent when the spark presses their ability keybinding
  */
 public class SparkAbilityC2SPayload implements CustomPayload {
-    // Payload needs a single instance
+    // Payload needs to be a singleton due to equals comparison done by PacketCodec.unit()
     public static final SparkAbilityC2SPayload INSTANCE = new SparkAbilityC2SPayload();
     public static final Id<SparkAbilityC2SPayload> ID = new CustomPayload.Id<>(Identifier.of(Matchbox.MOD_ID, "spark_ability_c2s"));
     public static final PacketCodec<PacketByteBuf, SparkAbilityC2SPayload> CODEC = PacketCodec.unit(INSTANCE);

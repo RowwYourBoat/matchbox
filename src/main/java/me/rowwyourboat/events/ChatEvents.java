@@ -1,8 +1,7 @@
 package me.rowwyourboat.events;
 
-import me.rowwyourboat.game.enums.GamePhase;
+import me.rowwyourboat.utils.enums.GamePhase;
 import me.rowwyourboat.game.GameInstance;
-import me.rowwyourboat.services.GameService;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
@@ -18,7 +17,7 @@ public class ChatEvents {
     }
 
     private static boolean onAllowChatMessage(SignedMessage message, ServerPlayerEntity sender, MessageType.Parameters params) {
-        GameInstance game = GameService.getGameFromWorld(sender.getEntityWorld());
+        GameInstance game = GameInstance.getByWorld(sender.getEntityWorld());
         if (game == null) { return true; }
 
         return (game.getPhase() == GamePhase.IN_ROUND);

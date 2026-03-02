@@ -11,12 +11,14 @@ import net.minecraft.util.hit.HitResult;
 import org.jspecify.annotations.Nullable;
 
 public class MatchboxClient implements ClientModInitializer {
+
 	@Override
 	public void onInitializeClient() {
 		InputActions.register();
 	}
 
-	public static @Nullable OtherClientPlayerEntity getTargetedPlayer(MinecraftClient client) {
+    @Nullable
+	public static OtherClientPlayerEntity getTargetedPlayer(MinecraftClient client) {
 		ClientPlayerEntity player = client.player;
 		if (player == null) { return null; }
 

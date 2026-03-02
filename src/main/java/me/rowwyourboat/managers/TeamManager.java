@@ -1,4 +1,4 @@
-package me.rowwyourboat.services;
+package me.rowwyourboat.managers;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -7,7 +7,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class NameVisibilityService {
+public class TeamManager {
 
     private static Scoreboard scoreboard;
 
@@ -15,7 +15,7 @@ public class NameVisibilityService {
     private static Team TEAM_HIDDEN;
 
     public static void registerEvents() {
-        ServerLifecycleEvents.SERVER_STARTED.register(NameVisibilityService::registerTeams);
+        ServerLifecycleEvents.SERVER_STARTED.register(TeamManager::registerTeams);
     }
 
     public static void show(ServerPlayerEntity player) {

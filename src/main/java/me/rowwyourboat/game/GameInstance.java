@@ -1,69 +1,107 @@
 package me.rowwyourboat.game;
 
 import me.rowwyourboat.Matchbox;
-import me.rowwyourboat.game.enums.GamePhase;
-import me.rowwyourboat.game.enums.Role;
-import me.rowwyourboat.services.NameVisibilityService;
+import me.rowwyourboat.managers.TeamManager;
+import me.rowwyourboat.utils.enums.GamePhase;
+import me.rowwyourboat.utils.enums.Role;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.jspecify.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+/*
+ * Round start:
+ * 1. Disable chat
+ * 2. Spread candidates out in the map (start with blind- and slowness)
+ * 3. Assign roles
+ * 4. Start a 10-minute round duration timer
+ */
+
+/*
+ * End of round (meeting):
+ * 1. Player marked by the spark dies (unless they're marked by the medic in which case they are told)
+ * 2. All candidates get blind- and slowness
+ * 3. Enable chat
+ * 4. Start a 10-minute meeting duration timer (3:30 for first round)
+ * 5. Disable chat when the timer hits 0
+ * 6. Show voting UI
+ */
 
 public class GameInstance {
 
+    private final static HashMap<RegistryKey<World>, GameInstance> instances = new HashMap<>();
+
     private final ServerWorld world;
-    private final HashMap<UUID, Role> playerRoleMap;
+    public final PlayerManager playerManager;
+    private final HashMap<Role, UUID> markedByMap;
+    public final List<ScheduledAction> scheduledActions;
 
-    private final Timer timer;
     private GamePhase phase;
-    private CounterTask counter;
 
-    private long phaseTimeLeft;
-    private long sparkAbilityCooldown;
+    public static void create(ServerWorld world) {
+        GameInstance game = new GameInstance(world);
+        instances.put(world.getRegistryKey(), game);
+    }
 
-    private UUID markedBySparkId;
-    private UUID markedByMedicId;
+    public static void remove(GameInstance game) {
+        game.end();
+        instances.remove(game.getIdentifier());
+    }
+
+    @Nullable
+    public static GameInstance getByWorld(ServerWorld world) {
+        return instances.get(world.getRegistryKey());
+    }
 
     public GameInstance(ServerWorld world) {
         this.world = world;
+        this.markedByMap = new HashMap<>();
+        this.playerManager = new PlayerManager(world);
+        this.scheduledActions = new ArrayList<>();
 
-        this.playerRoleMap = new HashMap<>();
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            this.playerRoleMap.put(player.getUuid(), Role.STANDARD);
+        this.performSetup();
+    }
+
+    private void tick(MinecraftServer server) {
+        List<ScheduledAction> remainingActions = new ArrayList<>();
+
+        for (ScheduledAction action : this.scheduledActions) {
+            if (action.hasExecuted()) { continue; }
+
+            remainingActions.add(action);
+            action.tick();
         }
 
-        this.timer = new Timer();
+        this.scheduledActions.clear();
+        this.scheduledActions.addAll(remainingActions);
+    }
+
+    private void performSetup() {
         this.phase = GamePhase.SETUP;
+        this.registerEvents();
+        this.playerManager.performSetup();
+
+        this.scheduledActions.add(new ScheduledAction(this, 30, this.playerManager::assignSpecialRoles));
     }
 
-    public void purge() {
-        this.timer.cancel();
-        NameVisibilityService.clearTeams();
+    private void registerEvents() {
+        ServerTickEvents.END_SERVER_TICK.register(this::tick);
     }
 
-    public void onTimerEnded() {
-
-    }
-
-    public void decrementPhaseTimeLeft() {
-        this.phaseTimeLeft--;
+    public void end() {
+        TeamManager.clearTeams();
     }
 
     public void setPhase(GamePhase phase) {
         this.phase = phase;
-    }
-
-    public void setPlayerRole(ServerPlayerEntity player, Role role) {
-        if (!role.canHaveMultiple() && !this.getPlayersByRole(role).isEmpty()) {
-            Matchbox.LOGGER.warn("Tried to assign {} on a game instance with one already present!", role.getName());
-            return;
-        }
-
-        this.playerRoleMap.put(player.getUuid(), role);
     }
 
     public void performSparkSwapAbility(UUID playerId) {
@@ -71,86 +109,39 @@ public class GameInstance {
     }
 
     public void setTargetAsMarkedBy(UUID targetId, UUID markerId) {
-        Role targetRole = this.playerRoleMap.get(targetId);
-        Role markerRole = this.playerRoleMap.get(markerId);
+        Role targetRole = this.playerManager.getRole(targetId);
+        Role markerRole = this.playerManager.getRole(markerId);
         if (
             (targetRole == null || targetRole == Role.SPARK) ||
             (markerRole == null || markerRole == Role.STANDARD)
         ) { return; }
 
-        ServerPlayerEntity targetPlayer = this.getPlayerById(targetId);
-        ServerPlayerEntity markerPlayer = this.getPlayerById(markerId);
+        ServerPlayerEntity targetPlayer = this.playerManager.getById(targetId);
+        ServerPlayerEntity markerPlayer = this.playerManager.getById(markerId);
         if (targetPlayer == null || markerPlayer == null) { return; }
 
         if (!markerPlayer.isInRange(targetPlayer, Matchbox.markRange)) { return; }
 
         switch (markerRole) {
             case SPARK: {
-                if (this.markedBySparkId != null) { break; }
-                this.markedBySparkId = targetId;
+                this.markedByMap.putIfAbsent(Role.SPARK, targetId);
                 break;
             } case MEDIC: {
-                if (this.markedByMedicId != null) { break; }
-                this.markedByMedicId = targetId;
+                this.markedByMap.putIfAbsent(Role.MEDIC, targetId);
                 break;
             }
         }
-    }
-
-    public void setPhaseTimeLeft(long time) {
-        this.phaseTimeLeft = time;
-    }
-
-    public List<ServerPlayerEntity> getAllPlayers() {
-        List<ServerPlayerEntity> players = new ArrayList<>();
-
-        for (UUID uuid : playerRoleMap.keySet()) {
-            players.add((ServerPlayerEntity) this.world.getPlayerByUuid(uuid));
-        }
-
-        return players;
-    }
-
-    public List<ServerPlayerEntity> getPlayers(Predicate<ServerPlayerEntity> predicate) {
-        List<ServerPlayerEntity> players = new ArrayList<>(this.world.getPlayers());
-        players.removeIf(predicate.negate());
-
-        return new ArrayList<>(players);
-    }
-
-    public long getPhaseTimeLeft() {
-        return this.phaseTimeLeft;
     }
 
     public GamePhase getPhase() {
         return this.phase;
     }
 
-    public @Nullable Role getPlayerRole(ServerPlayerEntity player) {
-        return this.playerRoleMap.get(player.getUuid());
-    }
-
-    public @Nullable ServerPlayerEntity getPlayerById(UUID id) {
-        return this.world.getPlayers(plr -> plr.getUuid().equals(id)).getFirst();
-    }
-
-    public List<ServerPlayerEntity> getPlayersByRole(Role role) {
-        List<ServerPlayerEntity> players = new ArrayList<>();
-
-        for (UUID uuid : playerRoleMap.keySet()) {
-            Role playerRole = this.playerRoleMap.get(uuid);
-            if (!playerRole.equals(role)) { continue; }
-            players.add((ServerPlayerEntity) this.world.getPlayerByUuid(uuid));
-        }
-
-        return players;
-    }
-
     public RegistryKey<World> getIdentifier() {
         return this.world.getRegistryKey();
     }
 
-    public ServerWorld getGameWorld() {
+    public ServerWorld getWorld() {
         return this.world;
     }
 }

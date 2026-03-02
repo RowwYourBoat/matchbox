@@ -2,7 +2,7 @@ package me.rowwyourboat.commands.spawns;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import me.rowwyourboat.services.DataService;
+import me.rowwyourboat.managers.DataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +18,7 @@ public class SpawnsRemove {
         if (server == null) { return 0; }
 
         Integer spawnIndex = commandContext.getArgument("index", Integer.class);
-        DataService.getGlobalSpawnLocations(server).remove(spawnIndex);
+        DataManager.getGlobalSpawnLocations(server).remove(spawnIndex);
 
         player.sendMessage(Text.of("Removed spawn location at index " + spawnIndex + "."));
         return Command.SINGLE_SUCCESS;

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.HashMap;
 
-@Mixin(PlayerSkinProvider.class)
+@Mixin(value = PlayerSkinProvider.class, priority = 1)
 public class PlayerSkinProviderMixin {
 	@ModifyVariable(method = "fetchSkinTextures(Ljava/util/UUID;Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;)Ljava/util/concurrent/CompletableFuture;", at = @At("HEAD"), ordinal = 0, argsOnly = true)
 	private MinecraftProfileTextures modifyTextures(MinecraftProfileTextures textures) {

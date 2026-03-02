@@ -6,7 +6,7 @@ import me.rowwyourboat.events.AfterDamageEvents;
 import me.rowwyourboat.events.BlockEvents;
 import me.rowwyourboat.events.ChatEvents;
 import me.rowwyourboat.network.PacketListener;
-import me.rowwyourboat.services.NameVisibilityService;
+import me.rowwyourboat.managers.TeamManager;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.permission.Permission;
 import net.minecraft.command.permission.PermissionLevel;
@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Matchbox implements ModInitializer {
-	public static final String MOD_ID = "matchbox";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final String MOD_ID = "matchbox";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final Permission.Level ownerPermissionLevel = new Permission.Level(PermissionLevel.OWNERS);
     public static final Double markRange = 4.5d;
@@ -30,7 +30,7 @@ public class Matchbox implements ModInitializer {
 	}
 
     private void registerEvents() {
-        NameVisibilityService.registerEvents();
+        TeamManager.registerEvents();
         PacketListener.register();
         AfterDamageEvents.register();
         BlockEvents.register();

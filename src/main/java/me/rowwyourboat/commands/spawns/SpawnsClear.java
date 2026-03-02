@@ -2,7 +2,7 @@ package me.rowwyourboat.commands.spawns;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
-import me.rowwyourboat.services.DataService;
+import me.rowwyourboat.managers.DataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ public class SpawnsClear {
         MinecraftServer server = player.getEntityWorld().getServer();
         if (server == null) { return 0; }
 
-        DataService.getGlobalSpawnLocations(server).clear();
+        DataManager.getGlobalSpawnLocations(server).clear();
         player.sendMessage(Text.of("Cleared all spawn locations."));
 
         return Command.SINGLE_SUCCESS;
